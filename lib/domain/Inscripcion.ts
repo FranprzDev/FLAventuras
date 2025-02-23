@@ -1,26 +1,21 @@
+import Repositorio from "../infraestructure/Repositorio";
+import { supabase } from "../transversal/Supabase/supabase";
 import Autorizacion from "./Autorizacion";
 
 class Inscripcion {
     private fechaInscripcion: Date;
-    private codigo: number;
+    private id: number;
     private estaActiva: boolean;
-    private motivoBaja: string;
-    private fechaBaja: Date;
-    private autorizacion: Autorizacion | null;
+    private motivoBaja: string | null = null;
+    private fechaBaja: Date | null = null;
+    private autorizacion: Autorizacion;
 
-    constructor(fechaInscripcion: Date, codigo: number, estaActiva: boolean, motivoBaja: string, fechaBaja: Date, documentoAutorizacion: string | null = null) {
+    constructor(id: number, fechaInscripcion: Date, estaActiva: boolean, idAutorizacion: number, documento: string) {
         this.fechaInscripcion = fechaInscripcion;
-        this.codigo = codigo;
+        this.id = id;
         this.estaActiva = estaActiva;
-        this.motivoBaja = motivoBaja;
-        this.fechaBaja = fechaBaja;
-        this.autorizacion = this.crearAutorizacion(documentoAutorizacion);
-    }
+        this.autorizacion = new Autorizacion(idAutorizacion, documento)
 
-    private crearAutorizacion(documentoAutorizacion: string | null): Autorizacion | null {
-        if(documentoAutorizacion === null) return null;
-
-        return new Autorizacion(documentoAutorizacion);
     }
 
     public getFechaInscripcion(): Date {
@@ -31,12 +26,12 @@ class Inscripcion {
         this.fechaInscripcion = fechaInscripcion;
     }
 
-    public getCodigo(): number {
-        return this.codigo;
+    public getId(): number {
+        return this.id;
     }
 
-    public setCodigo(codigo: number): void {
-        this.codigo = codigo;
+    public setId(codigo: number): void {
+        this.id = codigo;
     }
 
     public getEstaActiva(): boolean {
@@ -47,7 +42,7 @@ class Inscripcion {
         this.estaActiva = estaActiva;
     }
 
-    public getMotivoBaja(): string {
+    public getMotivoBaja(): string | null {
         return this.motivoBaja;
     }
 
@@ -55,7 +50,7 @@ class Inscripcion {
         this.motivoBaja = motivoBaja;
     }
 
-    public getFechaBaja(): Date {
+    public getFechaBaja(): Date | null {
         return this.fechaBaja;
     }
 
@@ -67,16 +62,16 @@ class Inscripcion {
         return this.autorizacion;
     }
 
-    public setAutorizacion(autorizacion: Autorizacion | null): void {
+    public setAutorizacion(autorizacion: Autorizacion): void {
         this.autorizacion = autorizacion;
     }
 
     public crear(object: any, string: string): void {
-        // TODO document why this method 'crear' is empty
+        // TODO
     }
 
     public anular(string: string): void {
-        // TODO document why this method 'anular' is empty
+        // TODO
     }
 }
 

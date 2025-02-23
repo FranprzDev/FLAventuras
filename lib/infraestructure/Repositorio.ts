@@ -1,10 +1,19 @@
 import { SupabaseClient } from '@supabase/supabase-js';
 
 class Repositorio<T> {
+    private static instance: Repositorio<any> | null = null;
     private readonly supabase: SupabaseClient;
 
-    constructor(supabase: SupabaseClient) {
+    private constructor(supabase: SupabaseClient) {
         this.supabase = supabase;
+    }
+
+    public static getInstance<T>(supabase: SupabaseClient): Repositorio<T> {
+        if (!Repositorio.instance) {
+            Repositorio.instance = new Repositorio<T>(supabase);
+        }
+
+        return Repositorio.instance as Repositorio<T>;
     }
 
     async getAll(tableName: string): Promise<T[]> {
@@ -31,6 +40,24 @@ class Repositorio<T> {
         }
     
         return data ? data as T : null;
+    }
+
+    async getLastIndex(tableName: string): Promise<number> {
+        const { data, error } = await this.supabase
+            .from(tableName)
+            .select('id')
+            .order('id', { ascending: false })
+            .limit(1);
+
+        if (error) {
+            throw new Error(error.message);
+        }
+
+        if (!data || data.length === 0) {
+            return 0;
+        }
+
+        return data[0].id + 1 as number;
     }
 
     async create(tableName: string, item: T): Promise<T> {

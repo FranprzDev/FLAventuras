@@ -9,3 +9,8 @@ export interface EventoResponseAPI {
     estado_inscripciones: 'ABIERTO' | 'CERRADO';
 }
 
+export interface AutorizacionResponseAPI {
+    id: number,
+    documento: string | null,
+    created_at: Date,
+}

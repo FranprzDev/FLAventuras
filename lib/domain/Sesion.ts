@@ -6,8 +6,8 @@ class SingletonSesion {
   private constructor(persona: Persona) {
     this.persona = persona
   }
-  public static getInstance(persona: Persona): SingletonSesion {
-    if (!SingletonSesion.instance) {
+  public static getInstance(persona: Persona | null): SingletonSesion {
+    if (!SingletonSesion.instance && persona !== null) {
       SingletonSesion.instance = new SingletonSesion(persona);
     }
     return SingletonSesion.instance;

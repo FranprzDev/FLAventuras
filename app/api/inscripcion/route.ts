@@ -1,6 +1,7 @@
 import ControladorInscripcionAEvento from "@/lib/application/Controladores/ControladorInscripcionAEvento";
 import { personaMayor, personaMenor } from "@/lib/constants";
 import SingletonSesion from "@/lib/domain/Sesion";
+import { NextResponse } from "next/server";
 
 async function POST() {
   const esMayorDeEdad = true
@@ -16,8 +17,7 @@ async function POST() {
   const controlador : ControladorInscripcionAEvento = new ControladorInscripcionAEvento();
   controlador.Inscripcion(idEvento, autorizacion);
 
-
-  return new Response("Hello, Next.js! post");
+  return new NextResponse("Se creo correctamente la autorización", { status: 201 });
 }
 
 

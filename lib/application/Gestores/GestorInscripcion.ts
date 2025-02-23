@@ -1,21 +1,24 @@
+import { ESTADO_INSCRIPCION } from "@/lib/domain/enum/Evento/ESTADO_INSCRIPCION";
 import Evento from "@/lib/domain/Evento";
 import Repositorio from "@/lib/infraestructure/Repositorio";
+import { uploadFile } from "@/lib/transversal/FileManagment/upload";
+import { supabase } from "@/lib/transversal/Supabase/supabase";
 import type { EventoResponseAPI } from "@/types/domain";
 
-import { createClient } from '@supabase/supabase-js'
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "https://cxsdwkqjqhtdwmvrpvjy.supabase.co"
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN4c2R3a3FqcWh0ZHdtdnJwdmp5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzU1ODk2MTIsImV4cCI6MjA1MTE2NTYxMn0.qNXxPHxFm0EgDgbdaSftn4rXOkMpSIF0tZRighV3sys"
-const supabase = createClient(supabaseUrl, supabaseKey)
-
-
 class GestorInscripcion {
+  constructor() {}
 
-  constructor () {}
-  
   async Inscripcion(idEvento: number, autorizacion: File | null) {
-    const Repo = new Repositorio<EventoResponseAPI>(supabase)
-    const eventDb = await Repo.getById('Evento', idEvento)
-    if(!eventDb) return new Error('Evento no encontrado') 
+    const PDF_DIR = "uploads/private/authorizations";
+    let documento = "";
+
+    if (autorizacion) {
+      documento = await uploadFile(autorizacion, PDF_DIR);
+    }
+
+    const Repo = Repositorio.getInstance<EventoResponseAPI>(supabase);
+    const eventDb = await Repo.getById("Evento", idEvento);
+    if (!eventDb) return new Error("Evento no encontrado");
     const ev = new Evento(
       eventDb.id,
       eventDb.nombre,
@@ -23,16 +26,20 @@ class GestorInscripcion {
       new Date(eventDb.fecha),
       eventDb.cupo,
       eventDb.ubicacion,
-      new Date(eventDb.created_at)
-    )
-    
-    
+      new Date(eventDb.created_at),
+      eventDb.estado_inscripciones as ESTADO_INSCRIPCION
+    );
 
+    if (ev.ESTADO_INSCRIPCION !== ESTADO_INSCRIPCION.ABIERTO)
+      return new Error("No hay cupos.");
+
+    const c = ev.hayCupos();
+
+    if (c === false) return new Error("No hay cupos.");
+
+    const idInscripcion = await Repo.getLastIndex("Inscripcion");
+    ev.agregarInscripcion(idInscripcion, documento);
   }
-
-  // private obtenerEvento(idEvento: number)  {
-  //   return Repositorio.getInstance(supabase).getById('eventos', idEvento)
-  // }
 
   confirmarBaja(arg0: string, arg1: number, arg2: number) {
     throw new Error("Method not implemented.");
@@ -43,4 +50,4 @@ class GestorInscripcion {
   }
 }
 
-export default GestorInscripcion
+export default GestorInscripcion;

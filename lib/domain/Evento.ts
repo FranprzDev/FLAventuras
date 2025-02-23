@@ -1,7 +1,11 @@
+import { AutorizacionResponseAPI } from "@/types/domain";
+import Repositorio from "../infraestructure/Repositorio";
+import { supabase } from "../transversal/Supabase/supabase";
 import { ESTADO_EVALUACION } from "./enum/Evento/ESTADO_EVALUACION";
 import { ESTADO_INSCRIPCION } from "./enum/Evento/ESTADO_INSCRIPCION";
 import Gasto from "./Gasto";
 import Inscripcion from "./Inscripcion";
+import SingletonSesion from "./Sesion";
 
 class Evento {
     private _nombre: string;
@@ -24,6 +28,7 @@ class Evento {
         cupo: number,
         ubicacion: string,
         created_at: Date = new Date(),
+        estado_inscripcion: ESTADO_INSCRIPCION = ESTADO_INSCRIPCION.ABIERTO,
     ) {
         this._nombre = nombre;
         this._id = id;
@@ -33,10 +38,38 @@ class Evento {
         this._cupo = cupo;
         this._inscripciones = [];
         this._gastos = [];
-        this._ESTADO_INSCRIPCION = ESTADO_INSCRIPCION.ABIERTO;
+        this._ESTADO_INSCRIPCION = estado_inscripcion;
         this._ESTADO_EVALUACION = ESTADO_EVALUACION.EN_PROCESO;
         this._created_at = created_at;
     }
+
+    public hayCupos(): boolean {
+        const c = this._cupo > (this._inscripciones.length + 1);
+        if(!c) this._ESTADO_INSCRIPCION = ESTADO_INSCRIPCION.CERRADO; 
+        return c;
+    }
+
+    public async agregarInscripcion(idInscripcion: number, documento: string) {
+        const Repo = Repositorio.getInstance(supabase);
+        const idAutorizacion = await Repo.getLastIndex("Autorizacion");
+        const i : Inscripcion = new Inscripcion(idInscripcion, new Date(), true, idAutorizacion, documento)
+
+        let autorizacionId : number = 0;
+
+        if(i.getAutorizacion() !== null) {
+            const autorizacion = await Repo.create("Autorizacion", i.getAutorizacion()) as AutorizacionResponseAPI;
+            autorizacionId = autorizacion.id;
+        }
+
+        const session = SingletonSesion.getInstance(null)
+        await Repo.create("Inscripcion", {
+            ...i,
+            fk_evento: this._id,
+            fk_autorizacion: autorizacionId,
+            fk_persona: session.obtenerPersona()?.dni
+        });
+    }
+
 
     public get nombre(): string {
         return this._nombre;

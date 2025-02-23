@@ -1,15 +1,28 @@
+import Repositorio from "../infraestructure/Repositorio";
+import { supabase } from "../transversal/Supabase/supabase";
+
 class Autorizacion {
-    documento: string;
+    private documento: string | null;
+    private created_at: Date
+    private id: number
 
-    constructor(documento: string) {
+    constructor(idAutorizacion: number,documento: string | null) {
+        this.id = idAutorizacion
         this.documento = documento;
+        this.created_at = new Date()
+
+        // this.guardarAutorizacion()
     }
 
-    static crear(documento: string): Autorizacion {
-        return new Autorizacion(documento);
+    // private async guardarAutorizacion() {
+    //     this.Repo.create("Autorizacion", this)
+    // }
+
+    get getId(): number {
+        return this.id
     }
 
-    get getDocumento(): string {
+    get getDocumento(): string | null {
         return this.documento
     }
 
