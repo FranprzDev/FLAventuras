@@ -5,7 +5,7 @@ import { ESTADO_EVALUACION } from "./enum/Evento/ESTADO_EVALUACION";
 import { ESTADO_INSCRIPCION } from "./enum/Evento/ESTADO_INSCRIPCION";
 import Gasto from "./Gasto";
 import Inscripcion from "./Inscripcion";
-import SingletonSesion from "./Sesion";
+import SingletonSesion from "../transversal/Auth/Sesion";
 
 class Evento {
     private _nombre: string;
@@ -43,8 +43,10 @@ class Evento {
         this._created_at = created_at;
     }
 
-    public hayCupos(): boolean {
-        const c = this._cupo > (this._inscripciones.length + 1);
+    public async hayCupos(): Promise<boolean> {
+        // probar
+        const numberInscripciones = await Repositorio.getInstance(supabase).getCount("Inscripcion");
+        const c = this._cupo > numberInscripciones;
         if(!c) this._ESTADO_INSCRIPCION = ESTADO_INSCRIPCION.CERRADO; 
         return c;
     }
@@ -54,20 +56,30 @@ class Evento {
         const idAutorizacion = await Repo.getLastIndex("Autorizacion");
         const i : Inscripcion = new Inscripcion(idInscripcion, new Date(), true, idAutorizacion, documento)
 
-        let autorizacionId : number = 0;
+        const session = SingletonSesion.getInstance(null)
 
-        if(i.getAutorizacion() !== null) {
-            const autorizacion = await Repo.create("Autorizacion", i.getAutorizacion()) as AutorizacionResponseAPI;
-            autorizacionId = autorizacion.id;
+        const sanitizedInscripcion = {
+            fechaInscripcion: i.getFechaInscripcion(),
+            id: i.getId(),
+            estaActiva: i.getEstaActiva(),
+            motivoBaja: i.getMotivoBaja(),
+            fechaBaja: i.getFechaBaja(),
         }
 
-        const session = SingletonSesion.getInstance(null)
         await Repo.create("Inscripcion", {
-            ...i,
+            ...sanitizedInscripcion,
             fk_evento: this._id,
-            fk_autorizacion: autorizacionId,
             fk_persona: session.obtenerPersona()?.dni
         });
+
+        const autorizacionObj = i.getAutorizacion()
+
+        if(autorizacionObj) {
+            await Repo.create("Autorizacion", {
+                ...autorizacionObj,
+                fk_inscripcion: i.getId()
+            });
+        }
     }
 
 

@@ -6,17 +6,11 @@ class Autorizacion {
     private created_at: Date
     private id: number
 
-    constructor(idAutorizacion: number,documento: string | null) {
+    constructor(idAutorizacion: number,documento: string) {
         this.id = idAutorizacion
         this.documento = documento;
         this.created_at = new Date()
-
-        // this.guardarAutorizacion()
     }
-
-    // private async guardarAutorizacion() {
-    //     this.Repo.create("Autorizacion", this)
-    // }
 
     get getId(): number {
         return this.id

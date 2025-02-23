@@ -1,23 +1,28 @@
 import ControladorInscripcionAEvento from "@/lib/application/Controladores/ControladorInscripcionAEvento";
-import { personaMayor, personaMenor } from "@/lib/constants";
-import SingletonSesion from "@/lib/domain/Sesion";
-import { NextResponse } from "next/server";
+import { personaMenor } from "@/lib/constants";
+import SingletonSesion from "@/lib/transversal/Auth/Sesion";
+import { DomainException } from "@/types/DomainException";
+import { NextRequest, NextResponse } from "next/server";
 
-async function POST() {
-  const esMayorDeEdad = true
-  const idEvento = 2
+async function POST(req: NextRequest) {
+  const url = new URL(req.url);
+  const idEvento = Number(url.searchParams.get('idEvento'));
 
-  if(esMayorDeEdad) {
-    SingletonSesion.getInstance(personaMayor)
-  } else {
-    SingletonSesion.getInstance(personaMenor)
+  try {
+    if(typeof idEvento !== "number") throw new DomainException("El id del evento debe ser un número", 408);
+
+    const formData = await req.json();
+    const autorizacionUrl = formData?.autorizacionUrl;
+  
+    const controlador : ControladorInscripcionAEvento = new ControladorInscripcionAEvento();
+    controlador.Inscripcion(Number(idEvento), autorizacionUrl);
+  
+    return new NextResponse("Se creo correctamente la inscripción", { status: 201 });
+  } catch (err) {
+    console.log(err)
+    const error = err as DomainException;
+    return new NextResponse(error?.message, { status: error?.statusCode ?? 500 });
   }
-
-  const autorizacion = new File([""], "autorizacion.txt", { type: "text/plain" }) ?? null;
-  const controlador : ControladorInscripcionAEvento = new ControladorInscripcionAEvento();
-  controlador.Inscripcion(idEvento, autorizacion);
-
-  return new NextResponse("Se creo correctamente la autorización", { status: 201 });
 }
 
 

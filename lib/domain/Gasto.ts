@@ -1,3 +1,4 @@
+import { DomainException } from "@/types/DomainException";
 import { CATEGORIA } from "./enum/Gasto/CATEGORIA";
 import { ESTADO } from "./enum/Gasto/ESTADO";
 
@@ -76,13 +77,12 @@ class Gasto {
         this.estado = estado
     }
 
-    static crear(monto: number, concepto: string, fecha: Date, categoria: string, estado: string): Gasto {
-        //TODO: Implementar
-        return new Gasto(concepto, monto, fecha, "", 0, CATEGORIA.SUPPLY, ESTADO.PENDIENTE)
+    static crear(): Gasto {
+        throw new DomainException("Método no implementado", 404);
     }
 
-    evaluar(motivoRechazo: string, estado: string): void {
-        //TODO: Implementar
+    evaluar(): void {
+        throw new DomainException("Método no implementado", 404);
     }
 }
 

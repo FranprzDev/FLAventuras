@@ -8,8 +8,13 @@ class ControladorInscripcionAEvento {
     this.GestorInscripcion = new GestorInscripcion();
   }
 
-  public Inscripcion(idEvento: number, autorizacion: File | null) {
-    this.GestorInscripcion.Inscripcion(idEvento, autorizacion);
+  public async SubirDocumento(documento: File) {
+    const url = await this.GestorInscripcion.SubirDocumento(documento);
+    return url;
+  }
+
+  public Inscripcion(idEvento: number, autorizacionUrl: string) {
+    this.GestorInscripcion.Inscripcion(idEvento, autorizacionUrl);
   }
 }
 

@@ -1,4 +1,4 @@
-import Persona from "./Persona/Persona";
+import Persona from "../../domain/Persona/Persona";
 
 class SingletonSesion {
   private static instance: SingletonSesion;

@@ -1,24 +1,30 @@
 import { ESTADO_INSCRIPCION } from "@/lib/domain/enum/Evento/ESTADO_INSCRIPCION";
 import Evento from "@/lib/domain/Evento";
 import Repositorio from "@/lib/infraestructure/Repositorio";
-import { uploadFile } from "@/lib/transversal/FileManagment/upload";
+import { FileManager } from "@/lib/transversal/FileManagment/FileManager";
 import { supabase } from "@/lib/transversal/Supabase/supabase";
 import type { EventoResponseAPI } from "@/types/domain";
+import { DomainException } from "@/types/DomainException";
 
 class GestorInscripcion {
   constructor() {}
 
-  async Inscripcion(idEvento: number, autorizacion: File | null) {
-    const PDF_DIR = "uploads/private/authorizations";
-    let documento = "";
+  async SubirDocumento(documento: File) {
+    const urlDocumento = await FileManager.getInstance().uploadFile(
+          documento,
+          "uploads/private/authorizations"
+    );
 
-    if (autorizacion) {
-      documento = await uploadFile(autorizacion, PDF_DIR);
-    }
+    return urlDocumento;
+  }
 
+  async Inscripcion(idEvento: number, autorizacionUrl: string) {
     const Repo = Repositorio.getInstance<EventoResponseAPI>(supabase);
     const eventDb = await Repo.getById("Evento", idEvento);
-    if (!eventDb) return new Error("Evento no encontrado");
+    if (!eventDb) throw new DomainException("Evento no encontrado", 404);
+    if(eventDb.estado_inscripciones === ESTADO_INSCRIPCION.CERRADO)
+      throw new DomainException("Las inscripciones para este evento se encuentran cerradas.", 404);
+
     const ev = new Evento(
       eventDb.id,
       eventDb.nombre,
@@ -30,23 +36,23 @@ class GestorInscripcion {
       eventDb.estado_inscripciones as ESTADO_INSCRIPCION
     );
 
-    if (ev.ESTADO_INSCRIPCION !== ESTADO_INSCRIPCION.ABIERTO)
-      return new Error("No hay cupos.");
+    const c = await ev.hayCupos();
 
-    const c = ev.hayCupos();
-
-    if (c === false) return new Error("No hay cupos.");
+    if (c === false) {
+      Repo.update("Evento", idEvento, { estado_inscripciones: ESTADO_INSCRIPCION.CERRADO });
+      throw new DomainException("No hay cupos disponibles para este evento.", 404);
+    } 
 
     const idInscripcion = await Repo.getLastIndex("Inscripcion");
-    ev.agregarInscripcion(idInscripcion, documento);
+    ev.agregarInscripcion(idInscripcion, autorizacionUrl);
   }
 
-  confirmarBaja(arg0: string, arg1: number, arg2: number) {
-    throw new Error("Method not implemented.");
+  confirmarBaja() {
+    throw new DomainException("Método no implementado", 404);
   }
 
-  listarInscriptos(arg0: number) {
-    throw new Error("Method not implemented.");
+  listarInscriptos() {
+    throw new DomainException("Método no implementado", 404);
   }
 }
 

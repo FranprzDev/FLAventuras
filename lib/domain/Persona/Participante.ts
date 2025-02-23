@@ -1,4 +1,4 @@
-import { Persona } from "./Persona";
+import Persona from "./Persona";
 
 class Participante extends Persona {
   constructor(

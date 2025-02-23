@@ -1,3 +1,4 @@
+import { DomainException } from '@/types/DomainException';
 import { SupabaseClient } from '@supabase/supabase-js';
 
 class Repositorio<T> {
@@ -22,10 +23,23 @@ class Repositorio<T> {
             .select('*');
 
         if (error) {
-            throw new Error(error.message);
+            throw new DomainException(error.message, 404);
         }
 
         return data as T[];
+    }
+
+    async getCount(tableName: string): Promise<number> {
+        const { data, error } = await this.supabase
+            .from(tableName)
+            .select('id')
+            .eq('estaActiva', true)
+
+        if (error) {
+            throw new DomainException(error.message, 404);
+        }
+
+        return data ? data.length : 0;
     }
 
     async getById(tableName: string, id: number): Promise<T | null> {
@@ -50,7 +64,7 @@ class Repositorio<T> {
             .limit(1);
 
         if (error) {
-            throw new Error(error.message);
+            throw new DomainException(error.message, 404);
         }
 
         if (!data || data.length === 0) {
