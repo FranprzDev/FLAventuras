@@ -1,6 +1,8 @@
+import { personaParaTestear } from "@/lib/constants";
 import { ESTADO_INSCRIPCION } from "@/lib/domain/enum/Evento/ESTADO_INSCRIPCION";
 import Evento from "@/lib/domain/Evento";
 import Repositorio from "@/lib/infraestructure/Repositorio";
+import SingletonSesion from "@/lib/transversal/Auth/Sesion";
 import { FileManager } from "@/lib/transversal/FileManagment/FileManager";
 import { supabase } from "@/lib/transversal/Supabase/supabase";
 import type { EventoResponseAPI } from "@/types/domain";
@@ -25,6 +27,14 @@ class GestorInscripcion {
     if(eventDb.estado_inscripciones === ESTADO_INSCRIPCION.CERRADO)
       throw new DomainException("Las inscripciones para este evento se encuentran cerradas.", 404);
 
+    const inscEx = await Repo.findPersonByDNI("Inscripcion", `${SingletonSesion.getInstance(personaParaTestear).obtenerPersona()?.getDni()}`);
+
+    console.log(inscEx);
+
+    if (inscEx) {
+      throw new DomainException("Ya se encuentra inscripto en este evento.", 400);
+    }
+
     const ev = new Evento(
       eventDb.id,
       eventDb.nombre,
@@ -35,6 +45,8 @@ class GestorInscripcion {
       new Date(eventDb.created_at),
       eventDb.estado_inscripciones as ESTADO_INSCRIPCION
     );
+
+
 
     const c = await ev.hayCupos();
 

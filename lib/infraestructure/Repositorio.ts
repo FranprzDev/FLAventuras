@@ -42,6 +42,21 @@ class Repositorio<T> {
         return data ? data.length : 0;
     }
 
+    async findPersonByDNI(tableName: string, dni: string): Promise<boolean> {
+        const { data, error } = await this.supabase
+            .from(tableName)
+            .select('*')
+            .eq('estaActiva', true)
+            .eq('fk_persona', dni)
+            .limit(1);
+        
+        if (error) {
+            throw new DomainException(error.message, 404);
+        }
+
+        return data.length > 0;
+    }
+
     async getById(tableName: string, id: number): Promise<T | null> {
         const { data, error } = await this.supabase
             .from(tableName)
