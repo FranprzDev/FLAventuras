@@ -1,0 +1,4 @@
+export enum ESTADO_INSCRIPCION {
+    ABIERTO = 'ABIERTO',
+    CERRADO = 'CERRADO'
+}

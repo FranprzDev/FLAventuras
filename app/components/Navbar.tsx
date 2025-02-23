@@ -4,7 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 export function Navbar() {
   return (
-    <header className="fixed top-0 z-50 w-full flex justify-center border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="fixed top-0 w-full flex justify-center border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-10">
       <div className="container max-w-6xl flex h-20 items-center justify-around">
         <div className="flex items-center justify-between w-full">
           <Link href="/" className="flex items-center gap-2">
@@ -16,11 +16,13 @@ export function Navbar() {
               className="object-contain"
             />
           </Link>
-
-          <Avatar className="h-12 w-12">
-            <AvatarImage src="/yooo.jpg" alt="User" />
-            <AvatarFallback>U</AvatarFallback>
-          </Avatar>
+          <div className="flex justify-center items-center gap-2">
+            <span className="text-b text-xl font-bold">Mayor de Edad</span>
+            <Avatar className="h-12 w-12">
+              <AvatarImage src="/yooo.jpg" alt="User" />
+              <AvatarFallback>U</AvatarFallback>
+            </Avatar>
+          </div>
         </div>
       </div>
     </header>

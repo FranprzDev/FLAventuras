@@ -1,0 +1,5 @@
+export enum ESTADO {
+    PENDIENTE = 'PENDIENTE',
+    APROBADO = 'APROBADO',
+    RECHAZADO = 'RECHAZADO',
+}

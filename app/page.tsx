@@ -8,16 +8,10 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination"
+import { events } from "@/lib/constants"
 import Link from "next/link"
 
 export default function EventsPage() {
-  const events = Array(12).fill({
-    name: "Nombre del Evento",
-    location: "Ansenuza, Cordoba",
-    date: "03/03/2025",
-    status: "Abierto a Inscripciones",
-    image: "/placeholder.svg?height=200&width=300",
-  })
 
   return (
     <>
@@ -25,10 +19,7 @@ export default function EventsPage() {
     <div className="container mx-auto mt-[80px]"></div>
     <div className="container mx-auto py-8 ">
       <div className="flex items-center justify-between mb-8">
-        <h1 className="text-4xl font-bold text-gray-900">EVENTOS DISPONIBLES</h1>
-        <Button size="lg" className="bg-[#FF6B6B] hover:bg-[#FF5252]">
-          CREAR EVENTO
-        </Button>
+        <h1 className="text-4xl font-bold text-[#FF6B6B]">EVENTOS DISPONIBLES</h1>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -43,11 +34,11 @@ export default function EventsPage() {
                 />
               </CardHeader>
               <CardContent className="p-4">
-                <h3 className="font-bold mb-2">{event.name}</h3>
+                <h3 className="font-bold mb-2 text-[#FF6B6B]">{event.name}</h3>
                 <div className="space-y-1 text-sm text-gray-600">
                   <p>{event.location}</p>
                   <p>Fecha: {event.date}</p>
-                  <p className="text-green-600">{event.status}</p>
+                    <p className={event.status === "Cerrado" ? "text-red-600" : "text-green-600"}>{event.status}</p>
                 </div>
               </CardContent>
             </Card>
@@ -62,12 +53,6 @@ export default function EventsPage() {
           </PaginationItem>
           <PaginationItem>
             <PaginationLink href="#">1</PaginationLink>
-          </PaginationItem>
-          <PaginationItem>
-            <PaginationLink href="#">2</PaginationLink>
-          </PaginationItem>
-          <PaginationItem>
-            <PaginationLink href="#">3</PaginationLink>
           </PaginationItem>
           <PaginationItem>
             <PaginationNext href="#" />

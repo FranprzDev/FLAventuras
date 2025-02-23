@@ -3,18 +3,21 @@ import { Button } from "@/components/ui/button"
 import { MapPin, Calendar } from "lucide-react"
 import { RegistrationDialog } from "@/app/components/registration-dialog"
 import {
-    Carousel,
-    CarouselContent,
-    CarouselItem,
-    CarouselNext,
-    CarouselPrevious,
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
 } from "@/components/ui/carousel"
+import Image from "next/image"
 
 export default function EventPage() {
-    return (
-        <div className="min-h-[calc(100vh-128px)]">
-            <div className="w-full">
-                <Carousel className="w-full"></Carousel>
+  return (
+    <div className="min-h-[calc(100vh-128px)]">
+      <div className="w-full">
+        <Carousel className="w-full">
+          <Image src="/mural.png" alt="Pintemos otro Mural!" width={1920} height={1080} />
+        </Carousel>
         <nav className="flex items-center gap-2 mb-8">
           <Link href="/" className="text-gray-600 hover:text-gray-900">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
