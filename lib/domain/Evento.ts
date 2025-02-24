@@ -57,35 +57,35 @@ class Evento {
     // }
 
     public async agregarInscripcion(idInscripcion: number, documento: string) {
-        const Repo = Repositorio.getInstance(supabase);
-        const idAutorizacion = await Repo.getLastIndex("Autorizacion");
-        const i : Inscripcion = new Inscripcion(idInscripcion, new Date(), true, idAutorizacion, documento)
-
-        const session = SingletonSesion.getInstance().obtenerPersona()
-        console.log(SingletonSesion.getInstance())
-
-        const sanitizedInscripcion = {
-            fechaInscripcion: i.getFechaInscripcion(),
-            id: i.getId(),
-            estaActiva: i.getEstaActiva(),
-            motivoBaja: i.getMotivoBaja(),
-            fechaBaja: i.getFechaBaja(),
-        }
-
-        await Repo.create("Inscripcion", {
-            ...sanitizedInscripcion,
-            fk_evento: this._id,
-            fk_persona: session?.getDni()
-        });
-
-        const autorizacionObj = i.getAutorizacion()
-
-        if(autorizacionObj) {
-            await Repo.create("Autorizacion", {
-                ...autorizacionObj,
-                fk_inscripcion: i.getId()
+            const Repo = Repositorio.getInstance(supabase);
+            const idAutorizacion = await Repo.getLastIndex("Autorizacion");
+            const i : Inscripcion = new Inscripcion(idInscripcion, new Date(), true, idAutorizacion, documento)
+    
+            const session = SingletonSesion.getInstance().obtenerPersona()
+    
+            const sanitizedInscripcion = {
+                fechaInscripcion: i.getFechaInscripcion(),
+                id: i.getId(),
+                estaActiva: i.getEstaActiva(),
+                motivoBaja: i.getMotivoBaja(),
+                fechaBaja: i.getFechaBaja(),
+            }
+    
+            await Repo.create("Inscripcion", {
+                ...sanitizedInscripcion,
+                fk_evento: this._id,
+                fk_persona: session?.getDni()
             });
-        }
+    
+            const autorizacionObj = i.getAutorizacion()
+    
+            if(autorizacionObj) {
+                await Repo.create("Autorizacion", {
+                    ...autorizacionObj,
+                    fk_inscripcion: i.getId()
+                });
+            }
+
     }
 
 

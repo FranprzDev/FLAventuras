@@ -13,52 +13,64 @@ class GestorInscripcion {
 
   async SubirDocumento(documento: File) {
     const urlDocumento = await FileManager.getInstance().uploadFile(
-          documento,
-          "uploads/private/authorizations"
+      documento,
+      "uploads/private/authorizations"
     );
 
     return urlDocumento;
   }
 
   async Inscripcion(idEvento: number, autorizacionUrl: string) {
-    const Repo = Repositorio.getInstance<EventoResponseAPI>(supabase);
-    const eventDb = await Repo.getById("Evento", idEvento);
-    if (!eventDb) throw new DomainException("Evento no encontrado", 404);
+      const Repo = Repositorio.getInstance<EventoResponseAPI>(supabase);
+      const eventDb = await Repo.getById("Evento", idEvento);
+      if (!eventDb) throw new DomainException("Evento no encontrado", 404);
 
-    const ev = new Evento(
-      eventDb.id,
-      eventDb.nombre,
-      eventDb.descripcion,
-      new Date(eventDb.fecha),
-      eventDb.cupo,
-      eventDb.ubicacion,
-      new Date(eventDb.created_at),
-      eventDb.estado_inscripciones as ESTADO_INSCRIPCION
-    );
+      const ev = new Evento(
+        eventDb.id,
+        eventDb.nombre,
+        eventDb.descripcion,
+        new Date(eventDb.fecha),
+        eventDb.cupo,
+        eventDb.ubicacion,
+        new Date(eventDb.created_at),
+        eventDb.estado_inscripciones as ESTADO_INSCRIPCION
+      );
 
-    // Las siguientes 2 condiciones protegen el acceso a la inscripción de un evento
-    // en el caso de que las precondiciones no se cumplan.
-    // const dniPerson = `${SingletonSesion.getInstance().obtenerPersona()?.getDni()}`;
-    // const inscEx = await ev.checkearInscripcion(dniPerson);
+      // Las siguientes 2 condiciones protegen el acceso a la inscripción de un evento
+      // en el caso de que las precondiciones no se cumplan.
+      // const dniPerson = `${SingletonSesion.getInstance().obtenerPersona()?.getDni()}`;
+      // const inscEx = await ev.checkearInscripcion(dniPerson);
 
-    // if (inscEx) {
-    //   throw new DomainException("Ya se encuentra inscripto en este evento.", 400);
-    // }
+      // if (inscEx) {
+      //   throw new DomainException("Ya se encuentra inscripto en este evento.", 400);
+      // }
 
-    // if(ev.ESTADO_INSCRIPCION === ESTADO_INSCRIPCION.CERRADO)
-    //   throw new DomainException("Las inscripciones para este evento se encuentran cerradas.", 400);
+      // if(ev.ESTADO_INSCRIPCION === ESTADO_INSCRIPCION.CERRADO)
+      //   throw new DomainException("Las inscripciones para este evento se encuentran cerradas.", 400);
 
-    if(SingletonSesion.getInstance().obtenerPersona().edad < 18 && autorizacionUrl === "") throw new DomainException("No se puede inscribir si no envias una autorización siendo menor de edad.", 400);
+      if (
+        SingletonSesion.getInstance().obtenerPersona().edad < 18 &&
+        autorizacionUrl === ""
+      )
+        throw new DomainException(
+          "No se puede inscribir si no envias una autorización siendo menor de edad.",
+          400
+        );
+
+      const c = await ev.hayCupos();
+            
+      if (c === false) {
+        throw new DomainException(
+          "No hay cupos disponibles.",
+          400
+        );
+      }
 
 
-    const c = await ev.hayCupos();
 
-    if (c === false) {
-      throw new DomainException("No hay cupos disponibles para este evento.", 404);
-    } 
-
-    const idInscripcion = await Repo.getLastIndex("Inscripcion");
-    ev.agregarInscripcion(idInscripcion, autorizacionUrl);
+      const idInscripcion = await Repo.getLastIndex("Inscripcion");
+      ev.agregarInscripcion(idInscripcion, autorizacionUrl);
+   
   }
 
   confirmarBaja() {

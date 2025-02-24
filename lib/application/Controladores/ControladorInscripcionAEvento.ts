@@ -13,8 +13,8 @@ class ControladorInscripcionAEvento {
     return url;
   }
 
-  public Inscripcion(idEvento: number, autorizacionUrl: string) {
-    this.GestorInscripcion.Inscripcion(idEvento, autorizacionUrl);
+  public async Inscripcion(idEvento: number, autorizacionUrl: string) {
+      await this.GestorInscripcion.Inscripcion(idEvento, autorizacionUrl);
   }
 }
 

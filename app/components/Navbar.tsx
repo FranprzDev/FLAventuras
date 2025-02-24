@@ -7,10 +7,6 @@ import { personaParaTestear } from "@/lib/constants"
 import { useEffect, Suspense } from "react"
 
 function NavbarContent() {
-  useEffect(() => {
-    SingletonSesion.getInstance().setPersona(personaParaTestear);
-    console.log(SingletonSesion.getInstance().obtenerPersona())
-  }, [])
 
   return (
     <header className="fixed top-0 w-full flex justify-center border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-10">

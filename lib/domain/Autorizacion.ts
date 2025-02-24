@@ -1,6 +1,3 @@
-import Repositorio from "../infraestructure/Repositorio";
-import { supabase } from "../transversal/Supabase/supabase";
-
 class Autorizacion {
     private documento: string | null;
     private created_at: Date
