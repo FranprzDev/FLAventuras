@@ -1,14 +1,10 @@
 import ControladorInscripcionAEvento from "@/lib/application/Controladores/ControladorInscripcionAEvento";
-import { personaParaTestear } from "@/lib/constants";
-import SingletonSesion from "@/lib/transversal/Auth/Sesion";
 import { DomainException } from "@/types/DomainException";
 import { NextRequest, NextResponse } from "next/server";
 
 async function POST(req: NextRequest) {
   const url = new URL(req.url);
   const idEvento = Number(url.searchParams.get('idEvento'));
-
-  SingletonSesion.getInstance(personaParaTestear)
 
   try {
     if(typeof idEvento !== "number") throw new DomainException("El id del evento debe ser un número", 408);

@@ -1,4 +1,4 @@
-import { AutorizacionResponseAPI } from "@/types/domain";
+import { AutorizacionResponseAPI, EventoResponseAPI } from "@/types/domain";
 import Repositorio from "../infraestructure/Repositorio";
 import { supabase } from "../transversal/Supabase/supabase";
 import { ESTADO_EVALUACION } from "./enum/Evento/ESTADO_EVALUACION";
@@ -6,6 +6,7 @@ import { ESTADO_INSCRIPCION } from "./enum/Evento/ESTADO_INSCRIPCION";
 import Gasto from "./Gasto";
 import Inscripcion from "./Inscripcion";
 import SingletonSesion from "../transversal/Auth/Sesion";
+import { personaParaTestear } from "../constants";
 
 class Evento {
     private _nombre: string;
@@ -14,8 +15,8 @@ class Evento {
     private _fecha: Date;
     private _ubicacion: string;
     private _cupo: number;
-    private _inscripciones: Inscripcion[];
-    private _gastos: Gasto[];
+    // private _inscripciones: Inscripcion[];
+    // private _gastos: Gasto[];
     private _ESTADO_INSCRIPCION: ESTADO_INSCRIPCION;
     private _ESTADO_EVALUACION: ESTADO_EVALUACION
     private _created_at: Date;
@@ -36,27 +37,31 @@ class Evento {
         this._fecha = fecha;
         this._ubicacion = ubicacion;
         this._cupo = cupo;
-        this._inscripciones = [];
-        this._gastos = [];
+        // this._inscripciones = [];
+        // this._gastos = [];
         this._ESTADO_INSCRIPCION = estado_inscripcion;
         this._ESTADO_EVALUACION = ESTADO_EVALUACION.EN_PROCESO;
         this._created_at = created_at;
     }
 
     public async hayCupos(): Promise<boolean> {
-        // probar
         const numberInscripciones = await Repositorio.getInstance(supabase).getCount("Inscripcion");
         const c = this._cupo > numberInscripciones;
-        if(!c) this._ESTADO_INSCRIPCION = ESTADO_INSCRIPCION.CERRADO; 
         return c;
     }
+
+    // public async checkearInscripcion(dni: string): Promise<boolean> {
+    //     const Repo = Repositorio.getInstance<EventoResponseAPI>(supabase);
+    //     const inscEx = await Repo.findPersonByDNI("Inscripcion", `${SingletonSesion.getInstance(personaParaTestear).obtenerPersona()?.getDni()}`);
+    //     return inscEx
+    // }
 
     public async agregarInscripcion(idInscripcion: number, documento: string) {
         const Repo = Repositorio.getInstance(supabase);
         const idAutorizacion = await Repo.getLastIndex("Autorizacion");
         const i : Inscripcion = new Inscripcion(idInscripcion, new Date(), true, idAutorizacion, documento)
 
-        const session = SingletonSesion.getInstance(null)
+        const session = SingletonSesion.getInstance(personaParaTestear)
 
         const sanitizedInscripcion = {
             fechaInscripcion: i.getFechaInscripcion(),
@@ -127,13 +132,13 @@ class Evento {
         this._cupo = value;
     }
 
-    public get inscripciones(): Inscripcion[] {
-        return this._inscripciones;
-    }
+    // public get inscripciones(): Inscripcion[] {
+    //     return this._inscripciones;
+    // }
 
-    public set inscripciones(value: Inscripcion[]) {
-        this._inscripciones = value;
-    }
+    // public set inscripciones(value: Inscripcion[]) {
+    //     this._inscripciones = value;
+    // }
 
     public get ESTADO_INSCRIPCION(): ESTADO_INSCRIPCION {
         return this._ESTADO_INSCRIPCION;

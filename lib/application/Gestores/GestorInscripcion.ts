@@ -24,16 +24,6 @@ class GestorInscripcion {
     const Repo = Repositorio.getInstance<EventoResponseAPI>(supabase);
     const eventDb = await Repo.getById("Evento", idEvento);
     if (!eventDb) throw new DomainException("Evento no encontrado", 404);
-    if(eventDb.estado_inscripciones === ESTADO_INSCRIPCION.CERRADO)
-      throw new DomainException("Las inscripciones para este evento se encuentran cerradas.", 404);
-
-    const inscEx = await Repo.findPersonByDNI("Inscripcion", `${SingletonSesion.getInstance(personaParaTestear).obtenerPersona()?.getDni()}`);
-
-    console.log(inscEx);
-
-    if (inscEx) {
-      throw new DomainException("Ya se encuentra inscripto en este evento.", 400);
-    }
 
     const ev = new Evento(
       eventDb.id,
@@ -46,12 +36,22 @@ class GestorInscripcion {
       eventDb.estado_inscripciones as ESTADO_INSCRIPCION
     );
 
+    // Las siguientes 2 condiciones protegen el acceso a la inscripción de un evento
+    // en el caso de que las precondiciones no se cumplan.
+    // SingletonSesion.getInstance(personaParaTestear)
+    // const dniPerson = `${SingletonSesion.getInstance(personaParaTestear).obtenerPersona()?.getDni()}`;
+    // const inscEx = await ev.checkearInscripcion(dniPerson);
 
+    // if (inscEx) {
+    //   throw new DomainException("Ya se encuentra inscripto en este evento.", 400);
+    // }
+
+    // if(ev.ESTADO_INSCRIPCION === ESTADO_INSCRIPCION.CERRADO)
+    //   throw new DomainException("Las inscripciones para este evento se encuentran cerradas.", 400);
 
     const c = await ev.hayCupos();
 
     if (c === false) {
-      Repo.update("Evento", idEvento, { estado_inscripciones: ESTADO_INSCRIPCION.CERRADO });
       throw new DomainException("No hay cupos disponibles para este evento.", 404);
     } 
 

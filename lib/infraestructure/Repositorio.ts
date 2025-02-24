@@ -17,18 +17,6 @@ class Repositorio<T> {
         return Repositorio.instance as Repositorio<T>;
     }
 
-    async getAll(tableName: string): Promise<T[]> {
-        const { data, error } = await this.supabase
-            .from(tableName)
-            .select('*');
-
-        if (error) {
-            throw new DomainException(error.message, 404);
-        }
-
-        return data as T[];
-    }
-
     async getCount(tableName: string): Promise<number> {
         const { data, error } = await this.supabase
             .from(tableName)
@@ -116,17 +104,6 @@ class Repositorio<T> {
         }
 
         return data as T | null;
-    }
-
-    async delete(tableName: string, id: string | number): Promise<void> {
-        const { error } = await this.supabase
-            .from(tableName)
-            .delete()
-            .eq('id', id);
-
-        if (error) {
-            throw new Error(error.message);
-        }
     }
 }
 
