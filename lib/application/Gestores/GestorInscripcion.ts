@@ -48,6 +48,9 @@ class GestorInscripcion {
     // if(ev.ESTADO_INSCRIPCION === ESTADO_INSCRIPCION.CERRADO)
     //   throw new DomainException("Las inscripciones para este evento se encuentran cerradas.", 400);
 
+    if(SingletonSesion.getInstance().obtenerPersona().edad < 18 && autorizacionUrl === "") throw new DomainException("No se puede inscribir si no envias una autorización siendo menor de edad.", 400);
+
+
     const c = await ev.hayCupos();
 
     if (c === false) {
