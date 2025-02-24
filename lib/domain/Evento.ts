@@ -61,7 +61,8 @@ class Evento {
         const idAutorizacion = await Repo.getLastIndex("Autorizacion");
         const i : Inscripcion = new Inscripcion(idInscripcion, new Date(), true, idAutorizacion, documento)
 
-        const session = SingletonSesion.getInstance(personaParaTestear)
+        const session = SingletonSesion.getInstance().obtenerPersona()
+        console.log(SingletonSesion.getInstance())
 
         const sanitizedInscripcion = {
             fechaInscripcion: i.getFechaInscripcion(),
@@ -74,7 +75,7 @@ class Evento {
         await Repo.create("Inscripcion", {
             ...sanitizedInscripcion,
             fk_evento: this._id,
-            fk_persona: session.obtenerPersona()?.dni
+            fk_persona: session?.getDni()
         });
 
         const autorizacionObj = i.getAutorizacion()

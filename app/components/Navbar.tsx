@@ -1,8 +1,16 @@
+'use client'
 import Image from "next/image"
 import Link from "next/link"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import SingletonSesion from "@/lib/transversal/Auth/Sesion"
+import { personaParaTestear } from "@/lib/constants"
+import { useEffect, Suspense } from "react"
 
-export function Navbar() {
+function NavbarContent() {
+  useEffect(() => {
+    SingletonSesion.getInstance().setPersona(personaParaTestear);
+    console.log(SingletonSesion.getInstance().obtenerPersona())
+  }, [])
 
   return (
     <header className="fixed top-0 w-full flex justify-center border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-10">
@@ -27,5 +35,13 @@ export function Navbar() {
         </div>
       </div>
     </header>
+  )
+}
+
+export function Navbar() {
+  return (
+    <Suspense fallback={<p>Loading navbar...</p>}>
+      <NavbarContent />
+    </Suspense>
   )
 }

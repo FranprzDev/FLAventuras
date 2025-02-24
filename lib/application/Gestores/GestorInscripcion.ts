@@ -38,8 +38,7 @@ class GestorInscripcion {
 
     // Las siguientes 2 condiciones protegen el acceso a la inscripción de un evento
     // en el caso de que las precondiciones no se cumplan.
-    // SingletonSesion.getInstance(personaParaTestear)
-    // const dniPerson = `${SingletonSesion.getInstance(personaParaTestear).obtenerPersona()?.getDni()}`;
+    // const dniPerson = `${SingletonSesion.getInstance().obtenerPersona()?.getDni()}`;
     // const inscEx = await ev.checkearInscripcion(dniPerson);
 
     // if (inscEx) {

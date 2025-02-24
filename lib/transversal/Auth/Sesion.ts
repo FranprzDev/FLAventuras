@@ -2,20 +2,20 @@ import Persona from "../../domain/Persona/Persona";
 
 class SingletonSesion {
   private static instance: SingletonSesion;
-  private persona: Persona | null = null;
-  private constructor(persona: Persona) {
-    this.persona = persona
-  }
-  public static getInstance(persona: Persona | null): SingletonSesion {
-    if (!SingletonSesion.instance && persona !== null) {
-      SingletonSesion.instance = new SingletonSesion(persona);
+  private persona: Persona;
+  private constructor() {
+    this.persona = {} as Persona;
+   }
+  public static getInstance(): SingletonSesion {
+    if (!SingletonSesion.instance) {
+      SingletonSesion.instance = new SingletonSesion();
     }
     return SingletonSesion.instance;
   }
   setPersona(persona: Persona) {
     this.persona = persona;
   }
-  obtenerPersona(): Persona | null {
+  obtenerPersona(): Persona {
     return this.persona;
   }
 }

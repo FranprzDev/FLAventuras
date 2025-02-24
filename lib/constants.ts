@@ -76,4 +76,4 @@ export const luisRocha = new Persona(
   "rochaparejon@gmail.com"
 );
 
-export const personaParaTestear = personaMayor
+export const personaParaTestear = personaMenor
