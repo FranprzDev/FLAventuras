@@ -1,4 +1,4 @@
-import ControladorInscripcionAEvento from "@/lib/application/Controladores/ControladorInscripcionAEvento";
+import GestorInscripcion from "@/lib/application/Gestores/GestorInscripcion";
 import { personaParaTestear } from "@/lib/constants";
 import SingletonSesion from "@/lib/transversal/Auth/Sesion";
 import { DomainException } from "@/types/DomainException";
@@ -11,14 +11,13 @@ async function POST(req: NextRequest) {
 
   try {
     if (isNaN(idEvento))
-      throw new DomainException("El id del evento debe ser un número", 408);
+      throw new DomainException("El id del evento debe ser un número", 400);
 
-    const formData = await req.json();
-    const autorizacionUrl = formData?.autorizacionUrl;
-    const controlador: ControladorInscripcionAEvento =
-      new ControladorInscripcionAEvento();
-    await controlador.Inscripcion(Number(idEvento), autorizacionUrl);
+    const formData = await req.formData();
+    const autorizacionFile = formData?.get('autorizacionFile') as File;
 
+    const gestor: GestorInscripcion = new GestorInscripcion();
+    await gestor.Inscripcion(Number(idEvento), autorizacionFile);
 
     return NextResponse.json({ message: "Inscripción realizada" }, { status: 201 });
   } catch (err) {

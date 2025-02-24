@@ -1,38 +1,29 @@
 import { DomainException } from "@/types/DomainException";
 import Autorizacion from "./Autorizacion";
-
 class Inscripcion {
   private fechaInscripcion: Date;
   private id: number;
   private estaActiva: boolean;
   private motivoBaja: string | null = null;
   private fechaBaja: Date | null = null;
-  private autorizacion: Autorizacion | null;
+  private autorizacion: Autorizacion;
 
   constructor(
     id: number,
     fechaInscripcion: Date,
-    estaActiva: boolean,
     idAutorizacion: number,
-    documento: string
   ) {
     this.fechaInscripcion = fechaInscripcion;
     this.id = id;
-    this.estaActiva = estaActiva;
-    this.autorizacion = this.crearAutorizacion(idAutorizacion, documento);
+    this.estaActiva = true;
+    this.autorizacion = new Autorizacion(idAutorizacion);
   }
 
   public getFechaInscripcion(): Date {
     return this.fechaInscripcion;
   }
 
-  private crearAutorizacion(idAutorizacion: number, documento: string) {
-    if (documento) {
-      return new Autorizacion(idAutorizacion, documento);
-    } else {
-      return null;
-    }
-  }
+
 
   public setFechaInscripcion(fechaInscripcion: Date): void {
     this.fechaInscripcion = fechaInscripcion;
@@ -70,7 +61,7 @@ class Inscripcion {
     this.fechaBaja = fechaBaja;
   }
 
-  public getAutorizacion(): Autorizacion | null {
+  public getAutorizacion(): Autorizacion {
     return this.autorizacion;
   }
 

@@ -1,23 +1,23 @@
 class Autorizacion {
-    private documento: string | null;
-    private created_at: Date
-    private id: number
+    private id: number;
+    private documento: string;
+    private created_at: Date;
 
-    constructor(idAutorizacion: number,documento: string) {
-        this.id = idAutorizacion
-        this.documento = documento;
-        this.created_at = new Date()
+    constructor(idAutorizacion: number) {
+        this.id = idAutorizacion;
+        this.created_at = new Date();
+        this.documento = "";
     }
 
-    get getId(): number {
-        return this.id
+    public getId(): number {
+        return this.id;
     }
 
-    get getDocumento(): string | null {
-        return this.documento
+    public getDocumento(): string | null {
+        return this.documento;
     }
 
-    set setDocumento(documento: string) {
+    public setDocumento(documento: string) {
         this.documento = documento;
     }
 }

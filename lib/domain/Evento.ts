@@ -7,6 +7,8 @@ import Gasto from "./Gasto";
 import Inscripcion from "./Inscripcion";
 import SingletonSesion from "../transversal/Auth/Sesion";
 import { personaParaTestear } from "../constants";
+import { FileManager } from "../transversal/FileManagment/FileManager";
+import Autorizacion from "./Autorizacion";
 
 class Evento {
     private _nombre: string;
@@ -50,17 +52,18 @@ class Evento {
         return c;
     }
 
-    // public async checkearInscripcion(dni: string): Promise<boolean> {
-    //     const Repo = Repositorio.getInstance<EventoResponseAPI>(supabase);
-    //     const inscEx = await Repo.findPersonByDNI("Inscripcion", `${SingletonSesion.getInstance(personaParaTestear).obtenerPersona()?.getDni()}`);
-    //     return inscEx
-    // }
-
-    public async agregarInscripcion(idInscripcion: number, documento: string) {
+    public async agregarInscripcion(idInscripcion: number, documento: File | null) {
             const Repo = Repositorio.getInstance(supabase);
             const idAutorizacion = await Repo.getLastIndex("Autorizacion");
-            const i : Inscripcion = new Inscripcion(idInscripcion, new Date(), true, idAutorizacion, documento)
-    
+            const i : Inscripcion = new Inscripcion(idInscripcion, new Date(), idAutorizacion)
+
+            let autObj: Autorizacion = i.getAutorizacion();
+
+            if (documento !== null) {
+                const fileUrl = await FileManager.getInstance().uploadFile(documento, "uploads/private/authorizations");
+                autObj.setDocumento(fileUrl as string);
+            }
+
             const session = SingletonSesion.getInstance().obtenerPersona()
     
             const sanitizedInscripcion = {
@@ -76,12 +79,10 @@ class Evento {
                 fk_evento: this._id,
                 fk_persona: session?.getDni()
             });
-    
-            const autorizacionObj = i.getAutorizacion()
-    
-            if(autorizacionObj) {
+        
+            if(autObj) {
                 await Repo.create("Autorizacion", {
-                    ...autorizacionObj,
+                    ...autObj,
                     fk_inscripcion: i.getId()
                 });
             }
@@ -89,57 +90,49 @@ class Evento {
     }
 
 
-    public get nombre(): string {
+    public getNombre(): string {
         return this._nombre;
     }
 
-    public set nombre(value: string) {
+    public setNombre(value: string) {
         this._nombre = value;
     }
 
-    public get codigo(): number {
+    public getCodigo(): number {
         return this._id;
     }
 
-    public get descripcion(): string {
+    public getDescripcion(): string {
         return this._descripcion;
     }
 
-    public set descripcion(value: string) {
+    public setDescripcion(value: string) {
         this._descripcion = value;
     }
 
-    public get fecha(): Date {
+    public getFecha(): Date {
         return this._fecha;
     }
 
-    public set fecha(value: Date) {
+    public setFecha(value: Date) {
         this._fecha = value;
     }
 
-    public get ubicacion(): string {
+    public getUbicacion(): string {
         return this._ubicacion;
     }
 
-    public set ubicacion(value: string) {
+    public setUbicacion(value: string) {
         this._ubicacion = value;
     }
 
-    public get cupo(): number {
+    public getCupo(): number {
         return this._cupo;
     }
 
-    public set cupo(value: number) {
+    public setCupo(value: number) {
         this._cupo = value;
     }
-
-    // public get inscripciones(): Inscripcion[] {
-    //     return this._inscripciones;
-    // }
-
-    // public set inscripciones(value: Inscripcion[]) {
-    //     this._inscripciones = value;
-    // }
 
     public get ESTADO_INSCRIPCION(): ESTADO_INSCRIPCION {
         return this._ESTADO_INSCRIPCION;
