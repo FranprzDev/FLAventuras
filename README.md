@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://nextjs-fastapi-starter.vercel.app/">
-    <img src="https://assets.vercel.com/image/upload/v1588805858/repositories/vercel/logo.png" height="96">
+    <img src="./public/FLA.png" height="96">
     <h3 align="center">FLAventuras</h3>
   </a>
 </p>
@@ -27,6 +27,10 @@ El proyecto está organizado en las siguientes capas en cuanto al backend:
 El backend se ejecuta directamente con Next.js 14.
 
 Esto permite una implementación más sencilla y unificada, aprovechando las capacidades de Next.js para el manejo tanto del frontend como del backend.
+
+## Como Ejecutarlo
+1) Instalar las dependencias  (comadno: npm install)
+2) Ejecutar (comando: npm run dev)
 
 ## Demo
 
