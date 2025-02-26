@@ -59,7 +59,7 @@ class Evento {
 
             let autObj: Autorizacion = i.getAutorizacion();
 
-            if (documento !== null) {
+            if (documento && documento?.size > 0) {
                 const fileUrl = await FileManager.getInstance().uploadFile(documento, "uploads/private/authorizations");
                 autObj.setDocumento(fileUrl as string);
             }
@@ -80,7 +80,7 @@ class Evento {
                 fk_persona: session?.getDni()
             });
         
-            if(autObj) {
+            if(autObj && autObj.getDocumento() !== "") {
                 await Repo.create("Autorizacion", {
                     ...autObj,
                     fk_inscripcion: i.getId()

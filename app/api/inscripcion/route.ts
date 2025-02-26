@@ -16,6 +16,9 @@ async function POST(req: NextRequest) {
     const formData = await req.formData();
     const autorizacionFile = formData?.get('autorizacionFile') as File;
 
+    if (SingletonSesion.getInstance().obtenerPersona().edad < 18 && autorizacionFile && autorizacionFile.size === 0)
+      throw new DomainException("El archivo de autorización es requerido para personas menores", 400);
+
     const gestor: GestorInscripcion = new GestorInscripcion();
     await gestor.Inscripcion(Number(idEvento), autorizacionFile);
 
