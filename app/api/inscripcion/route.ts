@@ -20,7 +20,7 @@ async function POST(req: NextRequest) {
       throw new DomainException("El archivo de autorización es requerido para personas menores", 400);
 
     const gestor: GestorInscripcion = new GestorInscripcion();
-    await gestor.Inscripcion(Number(idEvento), autorizacionFile);
+    await gestor.inscripcion(Number(idEvento), autorizacionFile);
 
     return NextResponse.json({ message: "Inscripción realizada" }, { status: 201 });
   } catch (err) {

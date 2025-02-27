@@ -1,14 +1,10 @@
-import { AutorizacionResponseAPI, EventoResponseAPI } from "@/types/domain";
 import Repositorio from "../infraestructure/Repositorio";
 import { supabase } from "../transversal/Supabase/supabase";
-import { ESTADO_EVALUACION } from "./enum/Evento/ESTADO_EVALUACION";
-import { ESTADO_INSCRIPCION } from "./enum/Evento/ESTADO_INSCRIPCION";
-import Gasto from "./Gasto";
 import Inscripcion from "./Inscripcion";
 import SingletonSesion from "../transversal/Auth/Sesion";
-import { personaParaTestear } from "../constants";
 import { FileManager } from "../transversal/FileManagment/FileManager";
 import Autorizacion from "./Autorizacion";
+import { ESTADO } from "./enum/Evento/ESTADO";
 
 class Evento {
     private _nombre: string;
@@ -17,10 +13,8 @@ class Evento {
     private _fecha: Date;
     private _ubicacion: string;
     private _cupo: number;
-    // private _inscripciones: Inscripcion[];
-    // private _gastos: Gasto[];
-    private _ESTADO_INSCRIPCION: ESTADO_INSCRIPCION;
-    private _ESTADO_EVALUACION: ESTADO_EVALUACION
+
+    private _estado: ESTADO;
     private _created_at: Date;
 
     constructor(
@@ -31,7 +25,7 @@ class Evento {
         cupo: number,
         ubicacion: string,
         created_at: Date = new Date(),
-        estado_inscripcion: ESTADO_INSCRIPCION = ESTADO_INSCRIPCION.ABIERTO,
+        _estado: ESTADO = ESTADO.ABIERTO,
     ) {
         this._nombre = nombre;
         this._id = id;
@@ -39,10 +33,7 @@ class Evento {
         this._fecha = fecha;
         this._ubicacion = ubicacion;
         this._cupo = cupo;
-        // this._inscripciones = [];
-        // this._gastos = [];
-        this._ESTADO_INSCRIPCION = estado_inscripcion;
-        this._ESTADO_EVALUACION = ESTADO_EVALUACION.EN_PROCESO;
+        this._estado = ESTADO.ABIERTO;
         this._created_at = created_at;
     }
 
@@ -134,20 +125,12 @@ class Evento {
         this._cupo = value;
     }
 
-    public get ESTADO_INSCRIPCION(): ESTADO_INSCRIPCION {
-        return this._ESTADO_INSCRIPCION;
+    public get ESTADO(): ESTADO {
+        return this._estado;
     }
 
-    public set ESTADO_INSCRIPCION(value: ESTADO_INSCRIPCION) {
-        this._ESTADO_INSCRIPCION = value;
-    }
-
-    public get ESTADO_EVALUACION(): ESTADO_EVALUACION {
-        return this._ESTADO_EVALUACION;
-    }
-
-    public set ESTADO_EVALUACION(value: ESTADO_EVALUACION) {
-        this._ESTADO_EVALUACION = value;
+    public set ESTADO_INSCRIPCION(value: ESTADO) {
+        this._estado = value;
     }
 }
 

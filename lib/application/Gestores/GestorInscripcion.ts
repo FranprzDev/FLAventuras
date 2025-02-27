@@ -1,4 +1,4 @@
-import { ESTADO_INSCRIPCION } from "@/lib/domain/enum/Evento/ESTADO_INSCRIPCION";
+import { ESTADO } from "@/lib/domain/enum/Evento/ESTADO";
 import Evento from "@/lib/domain/Evento";
 import Repositorio from "@/lib/infraestructure/Repositorio";
 import SingletonSesion from "@/lib/transversal/Auth/Sesion";
@@ -9,7 +9,7 @@ import { DomainException } from "@/types/DomainException";
 class GestorInscripcion {
   constructor() {}
 
-  async Inscripcion(idEvento: number, autorizacion: File | null) {
+  async inscripcion(idEvento: number, autorizacion: File | null) {
       const Repo = Repositorio.getInstance<EventoResponseAPI>(supabase);
       const eventDb = await Repo.getById("Evento", idEvento);
       if (!eventDb) throw new DomainException("Evento no encontrado", 404);
@@ -22,7 +22,7 @@ class GestorInscripcion {
         eventDb.cupo,
         eventDb.ubicacion,
         new Date(eventDb.created_at),
-        eventDb.estado_inscripciones as ESTADO_INSCRIPCION
+        eventDb.estado_inscripciones as ESTADO
       );
 
       if (

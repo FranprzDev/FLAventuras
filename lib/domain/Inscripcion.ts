@@ -4,6 +4,7 @@ class Inscripcion {
   private fechaInscripcion: Date;
   private id: number;
   private estaActiva: boolean;
+  private estaPresente: boolean
   private motivoBaja: string | null = null;
   private fechaBaja: Date | null = null;
   private autorizacion: Autorizacion;
@@ -16,6 +17,7 @@ class Inscripcion {
     this.fechaInscripcion = fechaInscripcion;
     this.id = id;
     this.estaActiva = true;
+    this.estaPresente = true;
     this.autorizacion = new Autorizacion(idAutorizacion);
   }
 
