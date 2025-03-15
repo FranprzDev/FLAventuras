@@ -5,6 +5,7 @@ import SingletonSesion from "../transversal/Auth/Sesion";
 import { FileManager } from "../transversal/FileManagment/FileManager";
 import Autorizacion from "./Autorizacion";
 import { ESTADO } from "./enum/Evento/ESTADO";
+import { DomainException } from "@/types/DomainException";
 
 class Evento {
     private _nombre: string;
@@ -44,6 +45,25 @@ class Evento {
     }
 
     public async agregarInscripcion(idInscripcion: number, documento: File | null) {
+            if (
+            SingletonSesion.getInstance().obtenerPersona().edad < 18 &&
+            documento === null
+            )
+            throw new DomainException(
+                "No se puede inscribir si no envias una autorización siendo menor de edad.",
+                400
+            );
+
+            const c = await this.hayCupos();
+            
+            if (c === false) {
+              throw new DomainException(
+                "No hay cupos disponibles.",
+                400
+              );
+            }
+      
+
             const Repo = Repositorio.getInstance(supabase);
             const idAutorizacion = await Repo.getLastIndex("Autorizacion");
             const i : Inscripcion = new Inscripcion(idInscripcion, new Date(), idAutorizacion)

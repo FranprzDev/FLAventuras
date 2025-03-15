@@ -25,24 +25,6 @@ class GestorInscripcion {
         eventDb.estado_inscripciones as ESTADO
       );
 
-      if (
-        SingletonSesion.getInstance().obtenerPersona().edad < 18 &&
-        autorizacion === null
-      )
-        throw new DomainException(
-          "No se puede inscribir si no envias una autorización siendo menor de edad.",
-          400
-        );
-
-      const c = await ev.hayCupos();
-            
-      if (c === false) {
-        throw new DomainException(
-          "No hay cupos disponibles.",
-          400
-        );
-      }
-
       const idInscripcion = await Repo.getLastIndex("Inscripcion");
       ev.agregarInscripcion(idInscripcion, autorizacion);
   }
